@@ -35,8 +35,8 @@ A comprehensive Frappe app for UTM parameter generation and URL shortening with 
 ## 🔧 Installation
 
 ### Prerequisites
-- Frappe Framework (v14+)
-- ERPNext (optional but recommended)
+- **Frappe Framework v15+**
+- ERPNext v15+ (optional but recommended)
 
 ### Setup
 1. Clone this repository to your Frappe bench apps folder:
@@ -272,6 +272,12 @@ MIT License - see LICENSE file for details.
 - **Issues**: [GitHub Issues](https://github.com/chinmaybhatk/utm_shortener/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/chinmaybhatk/utm_shortener/discussions)
 
+## ⚠️ Compatibility
+
+- **Frappe Framework**: v15.0+
+- **ERPNext**: v15.0+ (optional)
+- **Python**: 3.8+
+
 ## 📝 Changelog
 
 ### v1.0.0
@@ -280,6 +286,7 @@ MIT License - see LICENSE file for details.
 - UTM parameter generation
 - Basic analytics
 - API endpoints
+- Frappe v15 compatibility
 
 ---
 
