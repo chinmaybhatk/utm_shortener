@@ -10,9 +10,9 @@ app_license = "MIT"
 # Apps
 required_apps = ["frappe"]
 
-# Website routes for short URL redirects
+# Website routes for short URL redirects - more specific pattern
 website_route_rules = [
-    {"from_route": "/<path:short_code>", "to_route": "utm_shortener.utm_shortener.api.redirect_short_url"}
+    {"from_route": "/s/<path:short_code>", "to_route": "utm_shortener.utm_shortener.api.redirect_short_url"}
 ]
 
 # Scheduled tasks
