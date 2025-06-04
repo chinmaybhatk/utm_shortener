@@ -11,36 +11,30 @@ app_license = "MIT"
 required_apps = ["frappe"]
 
 # Remove website routes to prevent conflicts with desk
-# website_route_rules = []
+# Short URLs will use API endpoints instead
 
-# Scheduled tasks
-scheduler_events = {
-    "daily": [
-        "utm_shortener.utm_shortener.tasks.cleanup_expired_urls",
-        "utm_shortener.utm_shortener.tasks.update_geolocation_data"
-    ],
-    "hourly": [
-        "utm_shortener.utm_shortener.tasks.reset_rate_limits"
-    ]
-}
+# Scheduled tasks - commented out until tasks are implemented
+# scheduler_events = {
+#     "daily": [
+#         "utm_shortener.utm_shortener.tasks.cleanup_expired_urls",
+#         "utm_shortener.utm_shortener.tasks.update_geolocation_data"
+#     ],
+#     "hourly": [
+#         "utm_shortener.utm_shortener.tasks.reset_rate_limits"
+#     ]
+# }
 
-# Document Events
-doc_events = {
-    "UTM Campaign": {
-        "before_save": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.validate_utm_parameters"
-    },
-    "Short URL": {
-        "before_save": "utm_shortener.utm_shortener.doctype.short_url.short_url.generate_short_code"
-    }
-}
+# Document Events - commented out until doctype hooks are verified
+# doc_events = {
+#     "UTM Campaign": {
+#         "before_save": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.validate_utm_parameters"
+#     },
+#     "Short URL": {
+#         "before_save": "utm_shortener.utm_shortener.doctype.short_url.short_url.generate_short_code"
+#     }
+# }
 
-# Permissions
-permission_query_conditions = {
-    "UTM Campaign": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.get_permission_query_conditions",
-}
-
-# Web form integration
-webform_list_context = "utm_shortener.utm_shortener.utils.get_webform_list_context"
-
-# Boot session
-boot_session = "utm_shortener.utm_shortener.utils.boot_session"
+# Permissions - commented out until doctype is created
+# permission_query_conditions = {
+#     "UTM Campaign": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.get_permission_query_conditions",
+# }
