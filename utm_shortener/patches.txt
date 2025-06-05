@@ -1,2 +1,3 @@
 # UTM Shortener patches
 # Add patches here for database migrations
+utm_shortener.patches.add_url_fields_to_utm_campaign
