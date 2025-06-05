@@ -14,8 +14,10 @@ A comprehensive Frappe app for UTM parameter generation and URL shortening with 
 ### 📊 UTM Parameter Management
 - Complete UTM parameter builder
 - Template system for reusable campaigns
-- Automatic URL generation with UTM parameters
+- **Automatic URL generation with UTM parameters**
+- **Auto-computed full URLs with UTM parameters**
 - Campaign code generation
+- **One-click URL copying to clipboard**
 
 ### 📈 Advanced Analytics
 - Real-time click tracking
@@ -70,7 +72,7 @@ bench --site your-site.local migrate
 
 ## 📚 Quick Start
 
-### Creating a UTM Campaign
+### Creating a UTM Campaign with Auto-Generated URLs
 1. Navigate to **UTM Campaign** in the desk
 2. Click **New**
 3. Fill in campaign details:
@@ -78,7 +80,10 @@ bench --site your-site.local migrate
    - UTM Source: "email"
    - UTM Medium: "newsletter"
    - UTM Campaign: "summer_sale_2025"
-4. Save
+   - **Base URL: "https://example.com/products"** (NEW)
+4. The **Full URL with UTM Parameters** will be automatically generated
+5. Click **Copy Full URL** button to copy the complete URL
+6. Save
 
 ### Creating Short URLs
 1. Go to **Short URL** in the desk
@@ -102,6 +107,17 @@ response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shor
 
 data = response.json()
 print(data['message']['short_url'])
+```
+
+### Generate UTM URL
+```python
+response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.generate_utm_url', {
+    'campaign_name': 'CAMP-001',
+    'base_url': 'https://example.com/products'
+})
+
+utm_url = response.json()['message']
+print(f"Generated URL: {utm_url}")
 ```
 
 ### Get Analytics
@@ -141,6 +157,8 @@ Main campaign management with UTM parameters.
 - UTM Campaign (Data, Required)
 - UTM Term (Data, Optional)
 - UTM Content (Data, Optional)
+- **Base URL (Data, Optional) - NEW**
+- **Full URL with UTM Parameters (Small Text, Read-only, Auto-generated) - NEW**
 - Description (Text Editor)
 - Status (Select: Active, Inactive, Completed)
 - Start Date/End Date
@@ -279,6 +297,13 @@ MIT License - see LICENSE file for details.
 - **Python**: 3.8+
 
 ## 📝 Changelog
+
+### v1.1.0
+- **NEW**: Auto-generate full URLs with UTM parameters
+- **NEW**: Base URL field in UTM Campaign
+- **NEW**: One-click copy URL functionality
+- **NEW**: Real-time URL preview
+- Improved user experience
 
 ### v1.0.0
 - Initial release
