@@ -7,10 +7,15 @@ import random
 
 class UTMCampaign(Document):
     def before_save(self):
-        """Generate campaign code before saving"""
+        """Generate campaign code and full URL before saving"""
         if not self.campaign_code:
             self.campaign_code = self.generate_campaign_code()
+        
         self.validate_utm_parameters()
+        
+        # Generate full URL if base URL is provided
+        if self.base_url:
+            self.full_url = self.generate_utm_url(self.base_url)
     
     def generate_campaign_code(self):
         """Generate unique campaign code"""
@@ -29,9 +34,10 @@ class UTMCampaign(Document):
             
         return code
     
-    def generate_utm_url(self, base_url):
+    def generate_utm_url(self, base_url=None):
         """Generate complete URL with UTM parameters"""
-        if not base_url:
+        url = base_url or self.base_url
+        if not url:
             return ""
             
         params = {}
@@ -47,10 +53,10 @@ class UTMCampaign(Document):
             params['utm_content'] = self.utm_content
         
         if params:
-            separator = '&' if '?' in base_url else '?'
-            return f"{base_url}{separator}{urlencode(params)}"
+            separator = '&' if '?' in url else '?'
+            return f"{url}{separator}{urlencode(params)}"
         
-        return base_url
+        return url
     
     def validate_utm_parameters(self):
         """Validate UTM parameter format and values"""
@@ -118,6 +124,24 @@ def generate_utm_url(campaign_name, base_url):
     """API method to generate UTM URL"""
     campaign = frappe.get_doc("UTM Campaign", campaign_name)
     return campaign.generate_utm_url(base_url)
+
+@frappe.whitelist()
+def update_base_url(campaign_name, base_url):
+    """API method to update base URL and regenerate full URL"""
+    campaign = frappe.get_doc("UTM Campaign", campaign_name)
+    campaign.base_url = base_url
+    campaign.full_url = campaign.generate_utm_url(base_url)
+    campaign.save()
+    return campaign.full_url
+
+@frappe.whitelist()
+def copy_utm_url(campaign_name):
+    """API method to get the full URL for copying to clipboard"""
+    campaign = frappe.get_doc("UTM Campaign", campaign_name)
+    if not campaign.full_url and campaign.base_url:
+        campaign.full_url = campaign.generate_utm_url()
+        campaign.save()
+    return campaign.full_url
 
 def validate_utm_parameters(doc, method):
     """Hook for validating UTM parameters"""
