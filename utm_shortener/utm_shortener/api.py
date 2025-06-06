@@ -5,14 +5,26 @@ import re
 from datetime import datetime
 
 @frappe.whitelist(allow_guest=True)
-def redirect_short_url(short_code):
+def redirect_short_url(short_code=None):
     """Handle short URL redirects"""
     try:
-        # Find the short URL
-        short_url_doc = frappe.get_doc("Short URL", {"short_code": short_code})
+        # Get short_code from path if not provided
+        if not short_code:
+            path = frappe.local.request.path
+            if '/s/' in path:
+                short_code = path.split('/s/')[-1].strip('/')
         
-        if not short_url_doc:
+        if not short_code:
+            frappe.throw(_("Short code not provided"))
+        
+        # Find the short URL document
+        short_url_name = frappe.db.get_value("Short URL", {"short_code": short_code}, "name")
+        
+        if not short_url_name:
             frappe.throw(_("Short URL not found"), frappe.DoesNotExistError)
+        
+        # Get the document
+        short_url_doc = frappe.get_doc("Short URL", short_url_name)
         
         # Prepare request data
         request_data = {
