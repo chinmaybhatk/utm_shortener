@@ -2,7 +2,7 @@ app_name = "utm_shortener"
 app_title = "UTM Link Shortener"
 app_publisher = "Chinmay Bhatk"
 app_description = "UTM parameter generation and URL shortening"
-app_version = "1.0.0"
+app_version = "1.1.0"
 app_color = "blue"
 app_email = "chinmay@example.com"
 app_license = "MIT"
@@ -10,8 +10,13 @@ app_license = "MIT"
 # Apps
 required_apps = ["frappe"]
 
-# Remove website routes to prevent conflicts with desk
-# Short URLs will use API endpoints instead
+# Website routes for short URL redirects
+website_route_rules = [
+    {
+        "from_route": "/s/<path:short_code>",
+        "to_route": "utm_shortener.utm_shortener.api.redirect_short_url",
+    }
+]
 
 # Scheduled tasks - commented out until tasks are implemented
 # scheduler_events = {
