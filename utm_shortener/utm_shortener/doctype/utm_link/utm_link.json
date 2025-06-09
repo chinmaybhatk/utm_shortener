@@ -1,0 +1,105 @@
+{
+ "actions": [],
+ "allow_guest_to_view": 1,
+ "creation": "2024-06-09",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "original_url",
+  "short_code",
+  "utm_source",
+  "utm_medium", 
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+  "tracking_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "original_url",
+   "fieldtype": "Data",
+   "label": "Original URL",
+   "reqd": 1
+  },
+  {
+   "fieldname": "short_code",
+   "fieldtype": "Data",
+   "label": "Short Code",
+   "unique": 1
+  },
+  {
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "label": "UTM Source"
+  },
+  {
+   "fieldname": "utm_medium",
+   "fieldtype": "Data", 
+   "label": "UTM Medium"
+  },
+  {
+   "fieldname": "utm_campaign",
+   "fieldtype": "Data",
+   "label": "UTM Campaign"
+  },
+  {
+   "fieldname": "utm_content",
+   "fieldtype": "Data",
+   "label": "UTM Content"
+  },
+  {
+   "fieldname": "utm_term",
+   "fieldtype": "Data",
+   "label": "UTM Term"
+  },
+  {
+   "fieldname": "tracking_details",
+   "fieldtype": "Section Break",
+   "label": "Tracking Details"
+  },
+  {
+   "fieldname": "total_clicks",
+   "fieldtype": "Int",
+   "label": "Total Clicks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_clicked",
+   "fieldtype": "Datetime",
+   "label": "Last Clicked",
+   "read_only": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date"
+  },
+  {
+   "fieldname": "max_clicks_allowed",
+   "fieldtype": "Int",
+   "label": "Max Clicks Allowed"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-06-09",
+ "modified_by": "Administrator",
+ "module": "UTM Shortener",
+ "name": "UTM Link",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}
