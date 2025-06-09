@@ -1,45 +1,43 @@
+from . import __version__ as app_version
+
 app_name = "utm_shortener"
-app_title = "UTM Link Shortener"
-app_publisher = "Chinmay Bhatk"
-app_description = "UTM parameter generation and URL shortening"
-app_version = "1.1.0"
-app_color = "blue"
-app_email = "chinmay@example.com"
+app_title = "UTM Shortener"
+app_publisher = "Chinmay Bhat"
+app_description = "Advanced UTM Link Tracking Solution"
+app_version = app_version
+app_email = "chinmaybhatk@gmail.com"
 app_license = "MIT"
 
-# Apps
-required_apps = ["frappe"]
+# Logging and Installation Hooks
+before_install = "utm_shortener.utils.install.before_install"
+after_install = "utm_shortener.utils.install.after_install"
 
-# Website routes for short URL redirects
-website_route_rules = [
+# Fixtures for consistent DocType installation
+fixtures = [
     {
-        "from_route": "/s/<path:short_code>",
-        "to_route": "utm_shortener.utm_shortener.api.redirect_short_url",
+        "dt": "DocType", 
+        "filters": [
+            ["name", "in", ["UTM Link", "UTM Click Tracking"]]
+        ]
     }
 ]
 
-# Scheduled tasks - commented out until tasks are implemented
-# scheduler_events = {
-#     "daily": [
-#         "utm_shortener.utm_shortener.tasks.cleanup_expired_urls",
-#         "utm_shortener.utm_shortener.tasks.update_geolocation_data"
-#     ],
-#     "hourly": [
-#         "utm_shortener.utm_shortener.tasks.reset_rate_limits"
-#     ]
-# }
+# Web routing for UTM links
+web_routes = [
+    {"name": "utm", "page_name": "utm", "generator": "UTM Link"}
+]
 
-# Document Events - commented out until doctype hooks are verified
-# doc_events = {
-#     "UTM Campaign": {
-#         "before_save": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.validate_utm_parameters"
-#     },
-#     "Short URL": {
-#         "before_save": "utm_shortener.utm_shortener.doctype.short_url.short_url.generate_short_code"
-#     }
-# }
+# Permissions
+permission_query_conditions = {
+    "UTM Link": "utm_shortener.utils.permissions.get_permission_query_conditions",
+    "UTM Click Tracking": "utm_shortener.utils.permissions.get_permission_query_conditions"
+}
 
-# Permissions - commented out until doctype is created
-# permission_query_conditions = {
-#     "UTM Campaign": "utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.get_permission_query_conditions",
-# }
+# Dashboard configuration
+dashboards = {
+    "UTM Link": "utm_shortener/doctype/utm_link/utm_link_dashboard.py"
+}
+
+# Add these settings to help with troubleshooting and performance
+app_include_js = ["/assets/utm_shortener/js/utm_shortener.js"]
+app_include_css = ["/assets/utm_shortener/css/utm_shortener.css"]
