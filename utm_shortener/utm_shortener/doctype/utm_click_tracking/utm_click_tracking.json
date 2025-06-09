@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_guest_to_view": 1,
+ "creation": "2024-06-09",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "utm_link",
+  "clicked_at",
+  "ip_address", 
+  "user_agent",
+  "referrer",
+  "geolocation"
+ ],
+ "fields": [
+  {
+   "fieldname": "utm_link",
+   "fieldtype": "Link",
+   "label": "UTM Link",
+   "options": "UTM Link",
+   "reqd": 1
+  },
+  {
+   "fieldname": "clicked_at",
+   "fieldtype": "Datetime",
+   "label": "Clicked At",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ip_address",
+   "fieldtype": "Data",
+   "label": "IP Address"
+  },
+  {
+   "fieldname": "user_agent",
+   "fieldtype": "Data",
+   "label": "User Agent"
+  },
+  {
+   "fieldname": "referrer",
+   "fieldtype": "Data",
+   "label": "Referrer"
+  },
+  {
+   "fieldname": "geolocation",
+   "fieldtype": "Data",
+   "label": "Geolocation"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-06-09",
+ "modified_by": "Administrator",
+ "module": "UTM Shortener",
+ "name": "UTM Click Tracking",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}
