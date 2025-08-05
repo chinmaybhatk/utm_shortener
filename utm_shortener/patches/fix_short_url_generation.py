@@ -3,11 +3,12 @@ import frappe
 def execute():
     """Fix existing Short URLs that have null short_url field"""
     
-    # Get all Short URLs with null short_url
-    short_urls = frappe.get_all("Short URL", 
-        filters={"short_url": ["is", "null"]},
-        fields=["name", "short_code"]
-    )
+    # Get all Short URLs where short_url is null or empty
+    short_urls = frappe.db.sql("""
+        SELECT name, short_code 
+        FROM `tabShort URL` 
+        WHERE short_url IS NULL OR short_url = ''
+    """, as_dict=True)
     
     if short_urls:
         print(f"Found {len(short_urls)} Short URLs to fix")
