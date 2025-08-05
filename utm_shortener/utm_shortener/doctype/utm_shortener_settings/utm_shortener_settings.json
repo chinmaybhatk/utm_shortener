@@ -1,0 +1,127 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2025-08-05 13:35:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "general_settings_section",
+  "base_domain",
+  "use_https",
+  "column_break_1",
+  "default_expiry_days",
+  "rate_limit_per_hour",
+  "security_section",
+  "blocked_domains",
+  "analytics_section",
+  "enable_geolocation",
+  "geolocation_api_key"
+ ],
+ "fields": [
+  {
+   "fieldname": "general_settings_section",
+   "fieldtype": "Section Break",
+   "label": "General Settings"
+  },
+  {
+   "description": "Base domain for short URLs (e.g., short.ly)",
+   "fieldname": "base_domain",
+   "fieldtype": "Data",
+   "label": "Base Domain",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "use_https",
+   "fieldtype": "Check",
+   "label": "Use HTTPS"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "365",
+   "description": "Default number of days before a short URL expires",
+   "fieldname": "default_expiry_days",
+   "fieldtype": "Int",
+   "label": "Default Expiry Days"
+  },
+  {
+   "default": "100",
+   "description": "Maximum number of short URLs a user can create per hour",
+   "fieldname": "rate_limit_per_hour",
+   "fieldtype": "Int",
+   "label": "Rate Limit Per Hour"
+  },
+  {
+   "fieldname": "security_section",
+   "fieldtype": "Section Break",
+   "label": "Security"
+  },
+  {
+   "description": "Comma-separated list of domains to block from shortening",
+   "fieldname": "blocked_domains",
+   "fieldtype": "Long Text",
+   "label": "Blocked Domains"
+  },
+  {
+   "fieldname": "analytics_section",
+   "fieldtype": "Section Break",
+   "label": "Analytics"
+  },
+  {
+   "default": "0",
+   "description": "Enable geolocation tracking for clicks",
+   "fieldname": "enable_geolocation",
+   "fieldtype": "Check",
+   "label": "Enable Geolocation"
+  },
+  {
+   "depends_on": "enable_geolocation",
+   "description": "API key for geolocation service",
+   "fieldname": "geolocation_api_key",
+   "fieldtype": "Password",
+   "label": "Geolocation API Key"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "istable": 0,
+ "links": [],
+ "modified": "2025-08-05 13:35:00.000000",
+ "modified_by": "Administrator",
+ "module": "UTM Shortener",
+ "name": "UTM Shortener Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 0,
+   "print": 1,
+   "read": 1,
+   "report": 0,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 0,
+   "export": 0,
+   "print": 0,
+   "read": 1,
+   "report": 0,
+   "role": "UTM Manager",
+   "share": 0,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
