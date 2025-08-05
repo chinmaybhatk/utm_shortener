@@ -1,3 +1,4 @@
 frappe>=15.0.0
 requests>=2.25.0
 shortuuid>=1.0.0
+qrcode>=7.3.0
