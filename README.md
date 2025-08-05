@@ -1,318 +1,271 @@
-# UTM Link Shortener
+# UTM Shortener Enhanced
 
-A comprehensive Frappe app for UTM parameter generation and URL shortening with advanced analytics.
+An advanced UTM tracking and URL shortening solution for Frappe/ERPNext that provides Bitly-like functionality with powerful analytics.
 
-## 🚀 Features
+## Features
 
-### 🔗 URL Shortening
-- Generate short, memorable URLs
-- Custom aliases support
-- Bulk URL creation
-- Expiration date management
-- Domain blocking for security
+### Core Features
+- **URL Shortening**: Create short URLs with custom aliases or auto-generated codes
+- **UTM Campaign Management**: Organize URLs by campaigns with full UTM parameter support
+- **Click Tracking**: Track every click with detailed analytics
+- **Custom Domains**: Support for custom short domains
+- **Bulk Operations**: Create multiple short URLs at once
+- **Rate Limiting**: Prevent abuse with configurable rate limits
+- **URL Expiration**: Set expiration dates for temporary links
+- **QR Code Generation**: Auto-generate QR codes for short URLs
 
-### 📊 UTM Parameter Management
-- Complete UTM parameter builder
-- Template system for reusable campaigns
-- **Automatic URL generation with UTM parameters**
-- **Auto-computed full URLs with UTM parameters**
-- Campaign code generation
-- **One-click URL copying to clipboard**
+### Analytics Features
+- **Real-time Click Tracking**: Monitor clicks as they happen
+- **Geographic Analytics**: Track visitor locations
+- **Device & Browser Analytics**: Understand your audience's technology
+- **Referrer Tracking**: See where your traffic comes from
+- **Conversion Source Analysis**: Track which UTM sources drive the most traffic
+- **Campaign Performance**: Comprehensive campaign-level analytics
 
-### 📈 Advanced Analytics
-- Real-time click tracking
-- Device type detection (Desktop/Mobile/Tablet)
-- Browser and OS identification
-- Geolocation tracking (optional)
-- Country-wise analytics
-- Unique visitor counting
+## Installation
 
-### 🛡️ Security Features
-- Rate limiting
-- Domain blocking
-- URL validation
-- Malicious URL detection
-- Permission-based access control
-
-## 🔧 Installation
-
-### Prerequisites
-- **Frappe Framework v15+**
-- ERPNext v15+ (optional but recommended)
-
-### Setup
-1. Clone this repository to your Frappe bench apps folder:
 ```bash
-cd frappe-bench/apps
-git clone https://github.com/chinmaybhatk/utm_shortener.git
+bench get-app https://github.com/chinmaybhatk/utm_shortener.git
+bench --site your-site-name install-app utm_shortener
 ```
 
-2. Install the app to your site:
-```bash
-bench --site your-site.local install-app utm_shortener
+## Configuration
+
+### 1. UTM Shortener Settings
+Navigate to **UTM Shortener Settings** to configure:
+- Default short domain
+- Rate limits per hour
+- URL expiration defaults
+- Analytics retention period
+
+### 2. Setting Up Short URL Routing
+The app automatically sets up routing for short URLs at `/s/{short_code}`
+
+## Usage
+
+### Creating a UTM Campaign
+
+```python
+import frappe
+
+# Create a new UTM campaign
+result = frappe.call('utm_shortener.utm_shortener.api.create_utm_campaign',
+    campaign_name='Walue.biz Social Media Launch',
+    utm_source='social',
+    utm_medium='post',
+    utm_campaign='walue-launch-2024',
+    utm_term='business-solution',
+    utm_content='announcement',
+    description='Launch campaign for Walue.biz on social media'
+)
+
+print(f"Campaign ID: {result['campaign_id']}")
 ```
-
-3. Run database migrations:
-```bash
-bench --site your-site.local migrate
-```
-
-4. Create the required DocTypes manually:
-   - UTM Campaign
-   - Short URL
-   - URL Click Log
-   - UTM Template
-   - UTM Shortener Settings (Single DocType)
-
-5. Configure settings:
-   - Go to UTM Shortener Settings
-   - Set your base domain
-   - Configure rate limits
-   - Enable geolocation if needed
-
-## 📚 Quick Start
-
-### Creating a UTM Campaign with Auto-Generated URLs
-1. Navigate to **UTM Campaign** in the desk
-2. Click **New**
-3. Fill in campaign details:
-   - Campaign Name: "Summer Sale 2025"
-   - UTM Source: "email"
-   - UTM Medium: "newsletter"
-   - UTM Campaign: "summer_sale_2025"
-   - **Base URL: "https://example.com/products"** (NEW)
-4. The **Full URL with UTM Parameters** will be automatically generated
-5. Click **Copy Full URL** button to copy the complete URL
-6. Save
 
 ### Creating Short URLs
-1. Go to **Short URL** in the desk
-2. Click **New**
-3. Enter your original URL
-4. Select a UTM Campaign (optional)
-5. Add custom alias (optional)
-6. Save
 
-## 🔌 API Usage
-
-### Create Short URL
+#### Via API
 ```python
-import requests
+# Create a short URL with custom alias
+result = frappe.call('utm_shortener.utm_shortener.api.create_short_url',
+    original_url='https://walue.biz/features',
+    utm_campaign='4bs459tanr',  # Campaign ID
+    custom_alias='walue-social',
+    expiry_date='2024-12-31'
+)
 
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.create_short_url', {
-    'original_url': 'https://example.com/product',
-    'utm_campaign': 'summer_sale_campaign',
-    'custom_alias': 'summer-sale'
-})
-
-data = response.json()
-print(data['message']['short_url'])
+print(f"Short URL: {result['short_url']}")
+# Output: https://meta-app.frappe.cloud/s/walue-social
 ```
 
-### Generate UTM URL
+#### Via Web Interface
+1. Navigate to the public URL shortener page at `/utm-shortener`
+2. Enter your long URL
+3. Select a campaign (optional)
+4. Add a custom alias (optional)
+5. Set expiration date (optional)
+6. Click "Shorten URL"
+
+### Bulk URL Creation
+
 ```python
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.generate_utm_url', {
-    'campaign_name': 'CAMP-001',
-    'base_url': 'https://example.com/products'
-})
-
-utm_url = response.json()['message']
-print(f"Generated URL: {utm_url}")
-```
-
-### Get Analytics
-```python
-response = requests.get('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.get_url_analytics', {
-    'short_code': 'abc123'
-})
-
-analytics = response.json()['message']
-print(f"Total clicks: {analytics['short_url']['total_clicks']}")
-```
-
-### Bulk Create URLs
-```python
-import json
-
+# Create multiple URLs for a campaign
 urls = [
-    {"url": "https://shop.com/laptops", "alias": "laptops"},
-    {"url": "https://shop.com/phones", "alias": "phones"}
+    {"url": "https://walue.biz/pricing", "alias": "walue-pricing"},
+    {"url": "https://walue.biz/demo", "alias": "walue-demo"},
+    {"url": "https://walue.biz/contact"}  # Auto-generated alias
 ]
 
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.bulk_create_utm_urls', {
-    'campaign': 'summer_sale_campaign',
-    'url_list': json.dumps(urls)
-})
+result = frappe.call('utm_shortener.utm_shortener.api.bulk_create_utm_urls',
+    campaign='4bs459tanr',
+    url_list=urls
+)
+
+print(f"Created {result['created_count']} URLs")
 ```
 
-## 📊 DocTypes
+### Accessing Analytics
 
-### UTM Campaign
-Main campaign management with UTM parameters.
-**Fields:**
-- Campaign Name (Data, Required)
-- Campaign Code (Data, Auto-generated, Unique)
-- UTM Source (Data, Required)
-- UTM Medium (Select: email, social, cpc, etc.)
-- UTM Campaign (Data, Required)
-- UTM Term (Data, Optional)
-- UTM Content (Data, Optional)
-- **Base URL (Data, Optional) - NEW**
-- **Full URL with UTM Parameters (Small Text, Read-only, Auto-generated) - NEW**
-- Description (Text Editor)
-- Status (Select: Active, Inactive, Completed)
-- Start Date/End Date
-
-### Short URL
-Individual shortened URLs with tracking.
-**Fields:**
-- Short Code (Data, Required, Unique, Auto-generated)
-- Original URL (Long Text, Required)
-- Short URL (Data, Read-only, Auto-generated)
-- UTM Campaign (Link: UTM Campaign, Optional)
-- Generated UTM URL (Long Text, Read-only)
-- Custom Alias (Data, Optional, Unique)
-- Total Clicks (Int, Default: 0, Read-only)
-- Status (Select: Active, Inactive, Expired)
-- Expiry Date (Date, Optional)
-- Last Accessed (Datetime, Read-only)
-
-### URL Click Log
-Detailed click tracking records.
-**Fields:**
-- Short URL (Link: Short URL, Required)
-- Timestamp (Datetime, Default: now)
-- IP Address (Data)
-- User Agent (Long Text)
-- Referrer URL (Long Text)
-- Country (Data)
-- City (Data)
-- Device Type (Select: Desktop, Mobile, Tablet, Unknown)
-- Browser (Data)
-- Operating System (Data)
-
-### UTM Template
-Reusable UTM parameter templates.
-**Fields:**
-- Template Name (Data, Required)
-- Template Code (Data, Auto-generated)
-- UTM Source/Medium (Data, Required)
-- UTM Campaign/Term/Content Templates (Data)
-- Description (Text)
-- Is Active (Check, Default: 1)
-
-### UTM Shortener Settings (Single DocType)
-System-wide configuration.
-**Fields:**
-- Base Domain (Data, Default: "short.ly")
-- Use HTTPS (Check, Default: 1)
-- Default Expiry Days (Int, Default: 365)
-- Rate Limit Per Hour (Int, Default: 100)
-- Enable Geolocation (Check)
-- Geolocation API Key (Password)
-- Blocked Domains (Long Text)
-
-## 🔒 Permissions
-
-The app includes role-based permissions:
-- **UTM Manager**: Full access to all features
-- **UTM User**: Create and manage own URLs
-- **UTM Viewer**: Read-only access to analytics
-
-## ⏰ Scheduled Tasks
-
-### Daily Tasks
-- **cleanup_expired_urls**: Mark expired URLs as inactive
-- **update_geolocation_data**: Update location data for recent clicks
-
-### Hourly Tasks
-- **reset_rate_limits**: Reset user rate limiting counters
-
-## 🎨 Customization
-
-### Adding Custom Fields
-You can extend the doctypes with custom fields:
-
+#### URL Analytics
 ```python
-# Add custom field to UTM Campaign
-custom_field = {
-    "dt": "UTM Campaign",
-    "properties": [
-        {
-            "fieldname": "budget",
-            "label": "Campaign Budget",
-            "fieldtype": "Currency"
-        }
-    ]
-}
+# Get analytics for a specific short URL
+analytics = frappe.call('utm_shortener.utm_shortener.api.get_url_analytics',
+    short_code='walue-social'
+)
+
+print(f"Total Clicks: {analytics['short_url']['total_clicks']}")
+print(f"Recent Clicks: {analytics['recent_clicks']}")
 ```
 
-## 🐛 Troubleshooting
+#### Campaign Analytics
+```python
+# Get campaign-level analytics
+campaign_data = frappe.call('utm_shortener.utm_shortener.api.get_campaign_analytics',
+    campaign_id='4bs459tanr'
+)
 
-### Common Issues
+print(f"Total Campaign Clicks: {campaign_data['analytics']['total_clicks']}")
+print(f"Unique Visitors: {campaign_data['analytics']['unique_visitors']}")
+print(f"Top Sources: {campaign_data['source_breakdown']}")
+```
 
-#### Short URLs not redirecting
-- Check website route configuration in hooks.py
-- Ensure the app is installed and migrated
-- Verify domain settings
+## DocTypes
 
-#### Rate limiting issues
-- Check UTM Shortener Settings
-- Adjust rate_limit_per_hour value
+### 1. UTM Campaign
+- Stores campaign information
+- Links to multiple short URLs
+- Tracks overall campaign performance
 
-#### Analytics not tracking
-- Verify click logs are being created
-- Check browser restrictions
-- Ensure proper permissions
+### 2. Short URL
+- Individual shortened URLs
+- Tracks clicks and analytics
+- Supports custom aliases and expiration
 
-## 🤝 Contributing
+### 3. URL Click Log
+- Records every click event
+- Stores visitor information
+- Powers analytics reports
 
+### 4. UTM Template
+- Reusable UTM parameter sets
+- Quick campaign creation
+
+### 5. UTM Shortener Settings
+- Global configuration
+- Rate limiting settings
+- Default values
+
+## API Reference
+
+### Public APIs (No Authentication Required)
+- `redirect_short_url(short_code)`: Handles short URL redirects
+
+### Authenticated APIs
+
+#### create_utm_campaign
+Create a new UTM campaign
+```python
+create_utm_campaign(
+    campaign_name: str,
+    utm_source: str,
+    utm_medium: str,
+    utm_campaign: str,
+    utm_term: str = None,
+    utm_content: str = None,
+    description: str = None
+)
+```
+
+#### create_short_url
+Create a single short URL
+```python
+create_short_url(
+    original_url: str,
+    utm_campaign: str = None,
+    custom_alias: str = None,
+    expiry_date: str = None
+)
+```
+
+#### bulk_create_utm_urls
+Create multiple short URLs
+```python
+bulk_create_utm_urls(
+    campaign: str,
+    url_list: List[dict]
+)
+```
+
+#### get_url_analytics
+Get analytics for a short URL
+```python
+get_url_analytics(short_code: str)
+```
+
+#### get_campaign_analytics
+Get analytics for an entire campaign
+```python
+get_campaign_analytics(campaign_id: str)
+```
+
+## Testing Short URLs
+
+After creating a short URL, test it by:
+1. Opening the short URL in a browser: `https://your-domain.com/s/your-alias`
+2. Checking that it redirects to the correct destination
+3. Verifying that the click is tracked in analytics
+
+## Scheduled Tasks
+
+The app includes scheduled tasks for:
+- **Daily**: Clean up expired URLs
+- **Hourly**: Reset rate limits
+
+## Security Features
+
+- Rate limiting to prevent abuse
+- Permission-based access control
+- IP tracking for security analysis
+- Automatic URL validation
+
+## Best Practices
+
+1. **Use Descriptive Aliases**: Make short codes memorable and relevant
+2. **Set Expiration Dates**: For time-sensitive campaigns
+3. **Monitor Analytics**: Regular review of click patterns
+4. **Organize by Campaigns**: Group related URLs together
+5. **Test Before Sharing**: Always test short URLs before distribution
+
+## Troubleshooting
+
+### Short URL Not Redirecting
+1. Check if the URL status is "Active"
+2. Verify the URL hasn't expired
+3. Ensure the short code is correct
+4. Check server logs for errors
+
+### Analytics Not Updating
+1. Verify URL Click Log doctype permissions
+2. Check if scheduled tasks are running
+3. Review error logs
+
+### Rate Limit Issues
+1. Check UTM Shortener Settings
+2. Adjust rate limits as needed
+3. Monitor usage patterns
+
+## Contributing
+
+Contributions are welcome! Please:
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+4. Submit a pull request
 
-### Development Setup
-```bash
-# Install in development mode
-bench get-app utm_shortener /path/to/local/repo
-bench --site dev.local install-app utm_shortener
-bench --site dev.local migrate
-```
+## License
 
-## 📄 License
+MIT License - see LICENSE file for details
 
-MIT License - see LICENSE file for details.
+## Support
 
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/chinmaybhatk/utm_shortener/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/chinmaybhatk/utm_shortener/discussions)
-
-## ⚠️ Compatibility
-
-- **Frappe Framework**: v15.0+
-- **ERPNext**: v15.0+ (optional)
-- **Python**: 3.8+
-
-## 📝 Changelog
-
-### v1.1.0
-- **NEW**: Auto-generate full URLs with UTM parameters
-- **NEW**: Base URL field in UTM Campaign
-- **NEW**: One-click copy URL functionality
-- **NEW**: Real-time URL preview
-- Improved user experience
-
-### v1.0.0
-- Initial release
-- Core URL shortening functionality
-- UTM parameter generation
-- Basic analytics
-- API endpoints
-- Frappe v15 compatibility
-
----
-
-**Made with ❤️ for the Frappe community**
+For issues and feature requests, please use the [GitHub Issues](https://github.com/chinmaybhatk/utm_shortener/issues) page.
