@@ -37,10 +37,15 @@ A powerful, self-hosted URL shortening and UTM campaign management solution for 
 - Python 3.8+
 - MariaDB/MySQL
 - Redis
-- Nginx (for custom domain setup)
 
 ## 🛠️ Installation
 
+### Option 1: Frappe Cloud (Recommended)
+Install directly from the Frappe Cloud marketplace - no server configuration needed!
+
+See [FRAPPE_CLOUD_SETUP.md](FRAPPE_CLOUD_SETUP.md) for detailed instructions.
+
+### Option 2: Self-Hosted
 ```bash
 # Install the app
 bench get-app https://github.com/chinmaybhatk/utm_shortener.git
@@ -50,17 +55,26 @@ bench --site your-site-name install-app utm_shortener
 bench --site your-site-name migrate
 ```
 
+For production deployment, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## ⚙️ Quick Setup
 
 ### 1. Configure Your Domain
 
 Go to **UTM Shortener Settings** and configure:
 
+#### For Frappe Cloud:
+```
+Short Domain: your-site.frappe.cloud
+Use HTTPS: ✓
+Custom Domain Enabled: ☐
+```
+
+#### For Self-Hosted:
 ```
 Short Domain: link.yourdomain.com
 Use HTTPS: ✓
 Custom Domain Enabled: ✓
-Rate Limit per Hour: 100
 ```
 
 ### 2. Create Your First Campaign
@@ -84,12 +98,24 @@ short_url = frappe.get_doc({
 }).insert()
 
 print(f"Your short URL: {short_url.short_url}")
-# Output: https://link.yourdomain.com/s/new-product
 ```
 
-### 3. Share and Track
+### 3. URL Structure
 
-Share your short URLs and watch the analytics in real-time!
+#### Frappe Cloud URLs:
+```
+https://your-site.frappe.cloud/s/new-product
+```
+
+#### Self-Hosted URLs:
+```
+https://link.yourdomain.com/s/new-product
+```
+
+#### Custom Domain (with Cloudflare Worker):
+```
+https://short.link/new-product
+```
 
 ## 📊 How It Works
 
@@ -103,9 +129,31 @@ graph LR
     E --> G[Dashboard Reports]
 ```
 
+## 🌐 Deployment Options
+
+### 1. Frappe Cloud (Easiest)
+- No server management
+- Automatic SSL
+- Built-in scaling
+- Works out of the box
+
+### 2. Self-Hosted
+- Full control
+- Custom nginx configuration
+- Any domain structure
+
+### 3. Hybrid (Frappe Cloud + Custom Domain)
+- Use Cloudflare Workers for custom domains
+- Keep app on Frappe Cloud
+- Best of both worlds
+
+See our [Cloudflare Worker example](cloudflare-worker/utm-shortener-worker.js) for custom domain setup.
+
 ## 📚 Documentation
 
 - **[Setup Guide](SETUP_GUIDE.md)** - Detailed setup instructions
+- **[Frappe Cloud Setup](FRAPPE_CLOUD_SETUP.md)** - Frappe Cloud specific guide
+- **[Deployment Guide](DEPLOYMENT.md)** - Self-hosted production deployment
 - **[Workflow Documentation](docs/WORKFLOW.md)** - Visual workflow diagrams
 - **[API Reference](#api-reference)** - Complete API documentation
 
@@ -206,9 +254,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Documentation**: [Setup Guide](SETUP_GUIDE.md)
+- **Documentation**: [All Guides](https://github.com/chinmaybhatk/utm_shortener/tree/main/docs)
 - **Issues**: [GitHub Issues](https://github.com/chinmaybhatk/utm_shortener/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/chinmaybhatk/utm_shortener/discussions)
+- **Frappe Cloud Support**: support@frappe.cloud
 
 ## 🌟 Star History
 
