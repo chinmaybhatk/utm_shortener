@@ -209,6 +209,120 @@ def bulk_create_utm_urls(campaign, url_list):
             "error": str(e)
         }
 
+@frappe.whitelist()
+def create_utm_campaign(campaign_name, utm_source, utm_medium, utm_campaign, utm_term=None, utm_content=None, description=None):
+    """Create a new UTM campaign"""
+    try:
+        # Check if campaign already exists
+        if frappe.db.exists("UTM Campaign", {"utm_campaign": utm_campaign}):
+            frappe.throw(_("Campaign with this UTM campaign code already exists"))
+        
+        # Create UTM Campaign document
+        campaign_doc = frappe.get_doc({
+            "doctype": "UTM Campaign",
+            "campaign_name": campaign_name,
+            "utm_source": utm_source,
+            "utm_medium": utm_medium,
+            "utm_campaign": utm_campaign,
+            "utm_term": utm_term,
+            "utm_content": utm_content,
+            "description": description,
+            "status": "Active"
+        })
+        
+        campaign_doc.insert()
+        
+        return {
+            "success": True,
+            "campaign_id": campaign_doc.name,
+            "campaign_name": campaign_doc.campaign_name,
+            "utm_campaign": campaign_doc.utm_campaign,
+            "message": _("UTM Campaign created successfully")
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error creating UTM campaign: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+@frappe.whitelist()
+def get_campaign_analytics(campaign_id):
+    """Get analytics data for a specific UTM campaign"""
+    try:
+        # Get the campaign
+        campaign = frappe.get_doc("UTM Campaign", campaign_id)
+        
+        if not campaign:
+            frappe.throw(_("Campaign not found"))
+        
+        # Check permissions
+        if not frappe.has_permission("UTM Campaign", "read", campaign.name):
+            frappe.throw(_("Insufficient permissions"))
+        
+        # Get all short URLs for this campaign
+        short_urls = frappe.get_all("Short URL",
+            filters={"utm_campaign": campaign.name},
+            fields=["name", "short_code", "original_url", "clicks", "status", "creation"]
+        )
+        
+        # Get aggregated analytics
+        total_clicks = 0
+        total_unique_visitors = 0
+        
+        for url in short_urls:
+            # Get analytics for each short URL
+            click_data = frappe.db.sql("""
+                SELECT 
+                    COUNT(*) as clicks,
+                    COUNT(DISTINCT ip_address) as unique_visitors
+                FROM `tabURL Click Log`
+                WHERE short_url = %s
+            """, (url.name,), as_dict=True)[0]
+            
+            total_clicks += click_data.clicks
+            total_unique_visitors += click_data.unique_visitors
+        
+        # Get conversion source breakdown
+        source_analytics = frappe.db.sql("""
+            SELECT 
+                ucl.referrer_source as source,
+                COUNT(*) as clicks,
+                COUNT(DISTINCT ucl.ip_address) as unique_visitors
+            FROM `tabURL Click Log` ucl
+            INNER JOIN `tabShort URL` su ON ucl.short_url = su.name
+            WHERE su.utm_campaign = %s
+            GROUP BY ucl.referrer_source
+            ORDER BY clicks DESC
+        """, (campaign.name,), as_dict=True)
+        
+        return {
+            "success": True,
+            "campaign": {
+                "id": campaign.name,
+                "name": campaign.campaign_name,
+                "utm_campaign": campaign.utm_campaign,
+                "status": campaign.status,
+                "created": campaign.creation
+            },
+            "analytics": {
+                "total_clicks": total_clicks,
+                "unique_visitors": total_unique_visitors,
+                "total_urls": len(short_urls),
+                "active_urls": len([u for u in short_urls if u.status == "Active"])
+            },
+            "urls": short_urls,
+            "source_breakdown": source_analytics
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error getting campaign analytics: {str(e)}")
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
 def check_rate_limit(count=1):
     """Check if user is within rate limits"""
     try:
