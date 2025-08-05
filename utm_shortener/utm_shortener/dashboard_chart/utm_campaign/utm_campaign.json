@@ -1,0 +1,98 @@
+# UTM Campaign
+# Chart configurations for UTM Campaign Dashboard
+
+[
+    {
+        "chart_name": "Campaign Performance Overview",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "bar",
+            "height": 300,
+            "axisOptions": {
+                "xIsSeries": 1
+            }
+        },
+        "doctype": "UTM Campaign",
+        "filters_json": "{}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "UTM Campaign Performance",
+        "type": "Bar"
+    },
+    {
+        "chart_name": "Click Distribution by Source",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "pie",
+            "height": 300
+        },
+        "doctype": "URL Click Log",
+        "filters_json": "{}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "Click Source Distribution",
+        "type": "Pie"
+    },
+    {
+        "chart_name": "Daily Click Trend",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "line",
+            "height": 300,
+            "lineOptions": {
+                "regionFill": 1
+            }
+        },
+        "doctype": "URL Click Log",
+        "filters_json": "{\"period\": \"Last 30 Days\"}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "Daily Click Trends",
+        "type": "Line"
+    },
+    {
+        "chart_name": "Top Performing URLs",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "bar",
+            "height": 300,
+            "barOptions": {
+                "stacked": 0
+            }
+        },
+        "doctype": "Short URL",
+        "filters_json": "{\"limit\": 10}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "Top Performing URLs",
+        "type": "Bar"
+    },
+    {
+        "chart_name": "Device Type Distribution",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "donut",
+            "height": 300
+        },
+        "doctype": "URL Click Log",
+        "filters_json": "{}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "Device Analytics",
+        "type": "Donut"
+    },
+    {
+        "chart_name": "Geographic Distribution",
+        "chart_type": "Report",
+        "custom_options": {
+            "type": "heatmap",
+            "height": 400
+        },
+        "doctype": "URL Click Log",
+        "filters_json": "{}",
+        "is_public": 1,
+        "is_standard": 1,
+        "report_name": "Geographic Analytics",
+        "type": "Heatmap"
+    }
+]
