@@ -1,0 +1,275 @@
+{% extends "templates/web.html" %}
+
+{% block title %}URL Shortener - Create Short Links with UTM Tracking{% endblock %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="text-center mb-5">
+                <h1 class="display-4">URL Shortener</h1>
+                <p class="lead">Create short, trackable links with UTM parameters</p>
+            </div>
+
+            <!-- URL Shortener Form -->
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form id="shorten-url-form">
+                        <div class="mb-4">
+                            <label for="original_url" class="form-label">Enter your long URL</label>
+                            <input type="url" class="form-control form-control-lg" id="original_url" 
+                                   placeholder="https://example.com/very/long/url" required>
+                            <div class="form-text">Paste the URL you want to shorten</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="custom_alias" class="form-label">Custom alias (optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">{{ base_domain }}/s/</span>
+                                <input type="text" class="form-control" id="custom_alias" 
+                                       placeholder="my-custom-link" pattern="[a-zA-Z0-9-]+">
+                            </div>
+                            <div class="form-text">Leave empty for auto-generated short code</div>
+                        </div>
+
+                        <!-- UTM Parameters (Collapsible) -->
+                        <div class="mb-4">
+                            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" 
+                               href="#utm-params" role="button" aria-expanded="false">
+                                <i class="fa fa-plus"></i> Add UTM Parameters
+                            </a>
+                            <div class="collapse mt-3" id="utm-params">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="utm_source" class="form-label">UTM Source</label>
+                                        <input type="text" class="form-control" id="utm_source" 
+                                               placeholder="e.g., facebook">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="utm_medium" class="form-label">UTM Medium</label>
+                                        <input type="text" class="form-control" id="utm_medium" 
+                                               placeholder="e.g., social">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="utm_campaign" class="form-label">UTM Campaign</label>
+                                        <input type="text" class="form-control" id="utm_campaign" 
+                                               placeholder="e.g., summer_sale_2025">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100" id="shorten-btn">
+                            <i class="fa fa-link"></i> Shorten URL
+                        </button>
+                    </form>
+
+                    <!-- Result Section -->
+                    <div id="result-section" class="mt-4" style="display: none;">
+                        <div class="alert alert-success">
+                            <h5 class="alert-heading">Success! Your short URL is ready:</h5>
+                            <div class="input-group mt-3">
+                                <input type="text" class="form-control" id="short-url-result" readonly>
+                                <button class="btn btn-outline-secondary" type="button" id="copy-btn">
+                                    <i class="fa fa-copy"></i> Copy
+                                </button>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">This link will redirect to: <span id="original-url-display"></span></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Error Section -->
+                    <div id="error-section" class="mt-4" style="display: none;">
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">Error</h5>
+                            <p id="error-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if recent_urls %}
+            <!-- Recent URLs Section -->
+            <div class="mt-5">
+                <h3>Your Recent Short URLs</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Short URL</th>
+                                <th>Original URL</th>
+                                <th>Clicks</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for url in recent_urls %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url.short_url }}" target="_blank" class="text-decoration-none">
+                                        /s/{{ url.short_code }}
+                                    </a>
+                                </td>
+                                <td class="text-truncate" style="max-width: 300px;">
+                                    <small>{{ url.original_url }}</small>
+                                </td>
+                                <td><span class="badge bg-primary">{{ url.clicks }}</span></td>
+                                <td><small>{{ frappe.utils.pretty_date(url.creation) }}</small></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary copy-url-btn" 
+                                            data-url="{{ url.short_url }}">
+                                        <i class="fa fa-copy"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Info Section -->
+            <div class="mt-5 text-center text-muted">
+                <p><small>Rate limit: {{ rate_limit }} URLs per hour</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Handle form submission
+    $('#shorten-url-form').on('submit', function(e) {
+        e.preventDefault();
+        
+        const $btn = $('#shorten-btn');
+        const originalText = $btn.html();
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Creating...').prop('disabled', true);
+        
+        // Hide previous results
+        $('#result-section, #error-section').hide();
+        
+        // Prepare data
+        const data = {
+            original_url: $('#original_url').val(),
+            custom_alias: $('#custom_alias').val() || null
+        };
+        
+        // Add UTM parameters if provided
+        const utmSource = $('#utm_source').val();
+        const utmMedium = $('#utm_medium').val();
+        const utmCampaign = $('#utm_campaign').val();
+        
+        if (utmSource && utmMedium && utmCampaign) {
+            // First create UTM campaign
+            frappe.call({
+                method: 'utm_shortener.utm_shortener.api.create_utm_campaign',
+                args: {
+                    campaign_name: utmCampaign + ' - ' + new Date().toISOString().split('T')[0],
+                    utm_source: utmSource,
+                    utm_medium: utmMedium,
+                    utm_campaign: utmCampaign,
+                    base_url: data.original_url
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        data.utm_campaign = r.message;
+                        createShortUrl(data, $btn, originalText);
+                    }
+                },
+                error: function(r) {
+                    // If campaign creation fails, create URL without UTM
+                    createShortUrl(data, $btn, originalText);
+                }
+            });
+        } else {
+            createShortUrl(data, $btn, originalText);
+        }
+    });
+    
+    function createShortUrl(data, $btn, originalText) {
+        frappe.call({
+            method: 'utm_shortener.utm_shortener.api.create_short_url',
+            args: data,
+            callback: function(r) {
+                $btn.html(originalText).prop('disabled', false);
+                
+                if (r.message) {
+                    // Show success
+                    $('#short-url-result').val(r.message.short_url);
+                    $('#original-url-display').text(r.message.original_url);
+                    $('#result-section').show();
+                    
+                    // Clear form
+                    $('#shorten-url-form')[0].reset();
+                }
+            },
+            error: function(r) {
+                $btn.html(originalText).prop('disabled', false);
+                
+                // Show error
+                $('#error-message').text(r.message || 'An error occurred while creating the short URL.');
+                $('#error-section').show();
+            }
+        });
+    }
+    
+    // Copy to clipboard functionality
+    $('#copy-btn').on('click', function() {
+        const $input = $('#short-url-result');
+        $input.select();
+        document.execCommand('copy');
+        
+        const $btn = $(this);
+        const originalText = $btn.html();
+        $btn.html('<i class="fa fa-check"></i> Copied!');
+        setTimeout(() => $btn.html(originalText), 2000);
+    });
+    
+    // Copy recent URLs
+    $('.copy-url-btn').on('click', function() {
+        const url = $(this).data('url');
+        const $temp = $('<input>');
+        $('body').append($temp);
+        $temp.val(url).select();
+        document.execCommand('copy');
+        $temp.remove();
+        
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+        $btn.html('<i class="fa fa-check"></i>');
+        setTimeout(() => $btn.html(originalHtml), 2000);
+    });
+});
+</script>
+
+<style>
+.card {
+    border-radius: 12px;
+    border: none;
+}
+
+.form-control:focus {
+    border-color: #0066cc;
+    box-shadow: 0 0 0 0.2rem rgba(0, 102, 204, 0.25);
+}
+
+.btn-primary {
+    background-color: #0066cc;
+    border-color: #0066cc;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
+    border-color: #0052a3;
+}
+
+.table td {
+    vertical-align: middle;
+}
+</style>
+{% endblock %}

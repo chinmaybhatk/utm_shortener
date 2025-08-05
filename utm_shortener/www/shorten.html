@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo .icon {
+            font-size: 36px;
+        }
+        
+        .tagline {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .main-form {
+            margin-bottom: 30px;
+        }
+        
+        .url-input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 18px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        
+        .url-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+        }
+        
+        .url-input::placeholder {
+            color: #999;
+        }
+        
+        .shorten-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            background: #4CAF50;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .shorten-btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .shorten-btn:active {
+            transform: translateY(0);
+        }
+        
+        .shorten-btn.loading {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .optional-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .toggle-advanced {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .toggle-advanced:hover {
+            text-decoration: underline;
+        }
+        
+        .advanced-options {
+            display: none;
+            margin-top: 20px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .advanced-options.show {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .alias-preview {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .result-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .result-container.show {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-message {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .success-icon {
+            color: #4CAF50;
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .short-url-display {
+            background: white;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+        }
+        
+        .short-url-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a1a1a;
+            word-break: break-all;
+            flex: 1;
+        }
+        
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #45a049;
+        }
+        
+        .copy-btn.copied {
+            background: #2196F3;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .action-btn:hover {
+            border-color: #4CAF50;
+            color: #4CAF50;
+            background: #f8f9fa;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #c62828;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .recent-urls {
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .recent-urls h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .url-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .url-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .url-item:hover {
+            background: #e8f5e9;
+        }
+        
+        .url-item-text {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .url-item-short {
+            font-weight: 500;
+            color: #4CAF50;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .url-item-original {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .url-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .mini-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mini-btn:hover {
+            border-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .logo h1 {
+                font-size: 28px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1><span class="icon">🔗</span> URL Shortener</h1>
+        </div>
+        
+        <p class="tagline">Shorten your URLs and track clicks with ease</p>
+        
+        <form class="main-form" id="shortenForm">
+            <div class="url-input-group">
+                <input 
+                    type="url" 
+                    class="url-input" 
+                    id="urlInput" 
+                    placeholder="Paste your long URL here..."
+                    required
+                    autocomplete="off"
+                />
+            </div>
+            
+            <button type="submit" class="shorten-btn" id="shortenBtn">
+                <span>Shorten URL</span>
+                <span>→</span>
+            </button>
+            
+            <div class="optional-section">
+                <a class="toggle-advanced" id="toggleAdvanced">
+                    <span id="toggleIcon">▶</span>
+                    <span>Advanced Options (Optional)</span>
+                </a>
+                
+                <div class="advanced-options" id="advancedOptions">
+                    <div class="form-group">
+                        <label class="form-label" for="customAlias">Custom Alias</label>
+                        <input 
+                            type="text" 
+                            class="form-input" 
+                            id="customAlias" 
+                            placeholder="my-custom-link"
+                            pattern="[a-zA-Z0-9-_]+"
+                        />
+                        <div class="alias-preview" id="aliasPreview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="campaignSelect">Campaign (for tracking)</label>
+                        <select class="form-input" id="campaignSelect">
+                            <option value="">No campaign tracking</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <div class="error-message" id="errorMessage"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <strong>Your URL has been shortened!</strong>
+                </div>
+                
+                <div class="short-url-display">
+                    <span class="short-url-text" id="shortUrlText"></span>
+                    <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">
+                        Copy
+                    </button>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn" onclick="createAnother()">
+                        <span>➕</span> Create Another
+                    </button>
+                    <a class="action-btn" id="qrCodeBtn" href="#" target="_blank">
+                        <span>📱</span> QR Code
+                    </a>
+                    <a class="action-btn" id="analyticsBtn" href="#" target="_blank">
+                        <span>📊</span> Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="recent-urls" id="recentUrls" style="display: none;">
+            <h3>Recent URLs</h3>
+            <div class="url-list" id="urlList"></div>
+        </div>
+    </div>
+    
+    <script>
+        let shortDomain = window.location.hostname;
+        let useHttps = window.location.protocol === 'https:';
+        
+        // Toggle advanced options
+        document.getElementById('toggleAdvanced').addEventListener('click', function(e) {
+            e.preventDefault();
+            const options = document.getElementById('advancedOptions');
+            const icon = document.getElementById('toggleIcon');
+            
+            options.classList.toggle('show');
+            icon.textContent = options.classList.contains('show') ? '▼' : '▶';
+        });
+        
+        // Alias preview
+        document.getElementById('customAlias').addEventListener('input', function(e) {
+            const alias = e.target.value;
+            const preview = document.getElementById('aliasPreview');
+            
+            if (alias) {
+                const protocol = useHttps ? 'https' : 'http';
+                preview.textContent = `${protocol}://${shortDomain}/s/${alias}`;
+            } else {
+                preview.textContent = '';
+            }
+        });
+        
+        // Load campaigns
+        async function loadCampaigns() {
+            try {
+                const response = await fetch('/api/method/frappe.client.get_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Frappe-CSRF-Token': frappe.csrf_token
+                    },
+                    body: JSON.stringify({
+                        doctype: 'UTM Campaign',
+                        fields: ['name', 'campaign_name'],
+                        filters: [['status', '=', 'Active']],
+                        limit: 100
+                    })
+                });
+                
+                const data = await response.json();
+                const select = document.getElementById('campaignSelect');
+                
+                if (data.message && data.message.length > 0) {
+                    data.message.forEach(campaign => {
+                        const option = document.createElement('option');
+                        option.value = campaign.name;
+                        option.textContent = campaign.campaign_name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading campaigns:', error);
+            }
+        }
+        
+        // Form submission
+        document.getElementById('shortenForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const urlInput = document.getElementById('urlInput');
+            const customAlias = document.getElementById('customAlias').value;
+            const campaign = document.getElementById('campaignSelect').value;
+            const btn = document.getElementById('shortenBtn');
+            const errorMsg = document.getElementById('errorMessage');
+            
+            // Validate URL
+            const url = urlInput.value.trim();
+            if (!url) {
+                showError('Please enter a URL');
+                return;
+            }
+            
+            // Add protocol if missing
+            let finalUrl = url;
+            if (!url.match(/^https?:\/\//)) {
+                finalUrl = 'https://' + url;
+            }
+            
+            // Disable button
+            btn.classList.add('loading');
+            btn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+            btn.disabled = true;
+            errorMsg.classList.remove('show');
+            
+            try {
+                const response = await fetch('/api/method/utm_shortener.utm_shortener.api.create_short_url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Frappe-CSRF-Token': frappe.csrf_token
+                    },
+                    body: JSON.stringify({
+                        original_url: finalUrl,
+                        custom_alias: customAlias || null,
+                        utm_campaign: campaign || null
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.message && result.message.success) {
+                    showResult(result.message);
+                    urlInput.value = '';
+                    document.getElementById('customAlias').value = '';
+                    document.getElementById('aliasPreview').textContent = '';
+                    loadRecentUrls();
+                } else {
+                    showError(result.message?.error || 'Failed to create short URL');
+                }
+            } catch (error) {
+                showError('Network error. Please try again.');
+                console.error('Error:', error);
+            } finally {
+                btn.classList.remove('loading');
+                btn.innerHTML = '<span>Shorten URL</span><span>→</span>';
+                btn.disabled = false;
+            }
+        });
+        
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 5000);
+        }
+        
+        function showResult(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const shortUrlText = document.getElementById('shortUrlText');
+            const qrCodeBtn = document.getElementById('qrCodeBtn');
+            const analyticsBtn = document.getElementById('analyticsBtn');
+            
+            shortUrlText.textContent = data.short_url;
+            
+            // QR Code link (assuming QR code is generated)
+            qrCodeBtn.href = `/api/method/frappe.utils.print_format.download_pdf?doctype=Short URL&name=${encodeURIComponent(data.short_code)}&format=QR Code`;
+            
+            // Analytics link
+            analyticsBtn.href = `/app/short-url/${encodeURIComponent(data.short_code)}`;
+            
+            resultContainer.classList.add('show');
+            
+            // Scroll to result
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        function copyToClipboard() {
+            const shortUrlText = document.getElementById('shortUrlText').textContent;
+            const copyBtn = document.getElementById('copyBtn');
+            
+            navigator.clipboard.writeText(shortUrlText).then(() => {
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = shortUrlText;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+        
+        function createAnother() {
+            document.getElementById('resultContainer').classList.remove('show');
+            document.getElementById('urlInput').focus();
+            
+            // Collapse advanced options
+            document.getElementById('advancedOptions').classList.remove('show');
+            document.getElementById('toggleIcon').textContent = '▶';
+        }
+        
+        async function loadRecentUrls() {
+            try {
+                const response = await fetch('/api/method/frappe.client.get_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Frappe-CSRF-Token': frappe.csrf_token
+                    },
+                    body: JSON.stringify({
+                        doctype: 'Short URL',
+                        fields: ['name', 'short_code', 'short_url', 'original_url', 'clicks'],
+                        order_by: 'creation desc',
+                        limit: 5
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.message && data.message.length > 0) {
+                    const recentUrls = document.getElementById('recentUrls');
+                    const urlList = document.getElementById('urlList');
+                    
+                    urlList.innerHTML = '';
+                    
+                    data.message.forEach(url => {
+                        const item = document.createElement('div');
+                        item.className = 'url-item';
+                        
+                        item.innerHTML = `
+                            <div class="url-item-text">
+                                <div class="url-item-short">${url.short_url}</div>
+                                <div class="url-item-original">${url.original_url}</div>
+                            </div>
+                            <div class="url-item-actions">
+                                <button class="mini-btn" onclick="copyUrl('${url.short_url}')">Copy</button>
+                                <a class="mini-btn" href="/app/short-url/${url.name}" target="_blank">Stats</a>
+                            </div>
+                        `;
+                        
+                        urlList.appendChild(item);
+                    });
+                    
+                    recentUrls.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading recent URLs:', error);
+            }
+        }
+        
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                // Show a temporary tooltip or change button text
+                event.target.textContent = 'Copied!';
+                setTimeout(() => {
+                    event.target.textContent = 'Copy';
+                }, 1000);
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get settings from server
+            if (typeof frappe !== 'undefined') {
+                loadCampaigns();
+                loadRecentUrls();
+                
+                // Get domain settings
+                frappe.call({
+                    method: 'frappe.client.get_single',
+                    args: {
+                        doctype: 'UTM Shortener Settings'
+                    },
+                    callback: function(r) {
+                        if (r.message) {
+                            shortDomain = r.message.short_domain || window.location.hostname;
+                            useHttps = r.message.use_https || window.location.protocol === 'https:';
+                        }
+                    }
+                });
+            }
+            
+            // Focus on input
+            document.getElementById('urlInput').focus();
+        });
+    </script>
+</body>
+</html>

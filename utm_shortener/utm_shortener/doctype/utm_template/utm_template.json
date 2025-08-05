@@ -1,0 +1,155 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2025-08-05 13:40:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "template_details_section",
+  "template_name",
+  "template_code",
+  "is_active",
+  "column_break_1",
+  "description",
+  "utm_parameters_section",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign_template",
+  "column_break_2",
+  "utm_term_template",
+  "utm_content_template"
+ ],
+ "fields": [
+  {
+   "fieldname": "template_details_section",
+   "fieldtype": "Section Break",
+   "label": "Template Details"
+  },
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Template Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "template_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Template Code",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "utm_parameters_section",
+   "fieldtype": "Section Break",
+   "label": "UTM Parameters"
+  },
+  {
+   "description": "e.g., facebook, google, email",
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "UTM Source",
+   "reqd": 1
+  },
+  {
+   "description": "e.g., social, cpc, email",
+   "fieldname": "utm_medium",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "UTM Medium",
+   "reqd": 1
+  },
+  {
+   "description": "Campaign template. Use {template_name}, {date}, {timestamp} as variables",
+   "fieldname": "utm_campaign_template",
+   "fieldtype": "Data",
+   "label": "UTM Campaign Template",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Optional term template",
+   "fieldname": "utm_term_template",
+   "fieldtype": "Data",
+   "label": "UTM Term Template"
+  },
+  {
+   "description": "Optional content template",
+   "fieldname": "utm_content_template",
+   "fieldtype": "Data",
+   "label": "UTM Content Template"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "links": [],
+ "modified": "2025-08-05 13:40:00.000000",
+ "modified_by": "Administrator",
+ "module": "UTM Shortener",
+ "name": "UTM Template",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "UTM Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 0,
+   "delete": 0,
+   "email": 0,
+   "export": 1,
+   "print": 0,
+   "read": 1,
+   "report": 1,
+   "role": "UTM User",
+   "share": 0,
+   "write": 0
+  }
+ ],
+ "sort_field": "template_name",
+ "sort_order": "ASC",
+ "track_changes": 1
+}

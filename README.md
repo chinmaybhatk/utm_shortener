@@ -1,318 +1,268 @@
-# UTM Link Shortener
+# UTM Shortener - Enterprise URL Management & Analytics
 
-A comprehensive Frappe app for UTM parameter generation and URL shortening with advanced analytics.
+A powerful, self-hosted URL shortening and UTM campaign management solution for Frappe/ERPNext. Track marketing campaigns, analyze traffic sources, and optimize conversions with enterprise-grade analytics.
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 🔗 URL Shortening
-- Generate short, memorable URLs
-- Custom aliases support
-- Bulk URL creation
-- Expiration date management
-- Domain blocking for security
+### URL Management
+- **Custom Branded Domains**: Use your own domain for short URLs
+- **Flexible Short Codes**: Auto-generated or custom aliases
+- **Bulk Operations**: Create hundreds of URLs at once
+- **QR Code Generation**: Automatic QR codes for every URL
+- **URL Expiration**: Set time limits for temporary campaigns
 
-### 📊 UTM Parameter Management
-- Complete UTM parameter builder
-- Template system for reusable campaigns
-- **Automatic URL generation with UTM parameters**
-- **Auto-computed full URLs with UTM parameters**
-- Campaign code generation
-- **One-click URL copying to clipboard**
+### Campaign Tracking
+- **Full UTM Support**: Source, Medium, Campaign, Term, Content
+- **Campaign Organization**: Group URLs by marketing campaigns
+- **Template System**: Reusable UTM parameter sets
+- **Multi-channel Tracking**: Track performance across all channels
 
-### 📈 Advanced Analytics
-- Real-time click tracking
-- Device type detection (Desktop/Mobile/Tablet)
-- Browser and OS identification
-- Geolocation tracking (optional)
-- Country-wise analytics
-- Unique visitor counting
+### Analytics & Insights
+- **Real-time Analytics**: See clicks as they happen
+- **Conversion Source Tracking**: Know where your traffic comes from
+- **Geographic Analytics**: Track visitor locations
+- **Device & Browser Stats**: Understand your audience
+- **Campaign ROI**: Measure campaign effectiveness
 
-### 🛡️ Security Features
-- Rate limiting
-- Domain blocking
-- URL validation
-- Malicious URL detection
-- Permission-based access control
+### Enterprise Features
+- **Self-hosted**: Complete control over your data
+- **Rate Limiting**: Prevent abuse and spam
+- **Permission Control**: Role-based access
+- **API Access**: Full REST API for integrations
+- **Scheduled Cleanup**: Automatic maintenance
 
-## 🔧 Installation
+## 📋 Prerequisites
 
-### Prerequisites
-- **Frappe Framework v15+**
-- ERPNext v15+ (optional but recommended)
+- Frappe/ERPNext v14 or higher
+- Python 3.8+
+- MariaDB/MySQL
+- Redis
 
-### Setup
-1. Clone this repository to your Frappe bench apps folder:
+## 🛠️ Installation
+
+### Option 1: Frappe Cloud (Recommended)
+Install directly from the Frappe Cloud marketplace - no server configuration needed!
+
+See [FRAPPE_CLOUD_SETUP.md](FRAPPE_CLOUD_SETUP.md) for detailed instructions.
+
+### Option 2: Self-Hosted
 ```bash
-cd frappe-bench/apps
-git clone https://github.com/chinmaybhatk/utm_shortener.git
+# Install the app
+bench get-app https://github.com/chinmaybhatk/utm_shortener.git
+bench --site your-site-name install-app utm_shortener
+
+# Run migrations
+bench --site your-site-name migrate
 ```
 
-2. Install the app to your site:
-```bash
-bench --site your-site.local install-app utm_shortener
+For production deployment, see [DEPLOYMENT.md](DEPLOYMENT.md).
+
+## ⚙️ Quick Setup
+
+### 1. Configure Your Domain
+
+Go to **UTM Shortener Settings** and configure:
+
+#### For Frappe Cloud:
+```
+Short Domain: your-site.frappe.cloud
+Use HTTPS: ✓
+Custom Domain Enabled: ☐
 ```
 
-3. Run database migrations:
-```bash
-bench --site your-site.local migrate
+#### For Self-Hosted:
+```
+Short Domain: link.yourdomain.com
+Use HTTPS: ✓
+Custom Domain Enabled: ✓
 ```
 
-4. Create the required DocTypes manually:
-   - UTM Campaign
-   - Short URL
-   - URL Click Log
-   - UTM Template
-   - UTM Shortener Settings (Single DocType)
-
-5. Configure settings:
-   - Go to UTM Shortener Settings
-   - Set your base domain
-   - Configure rate limits
-   - Enable geolocation if needed
-
-## 📚 Quick Start
-
-### Creating a UTM Campaign with Auto-Generated URLs
-1. Navigate to **UTM Campaign** in the desk
-2. Click **New**
-3. Fill in campaign details:
-   - Campaign Name: "Summer Sale 2025"
-   - UTM Source: "email"
-   - UTM Medium: "newsletter"
-   - UTM Campaign: "summer_sale_2025"
-   - **Base URL: "https://example.com/products"** (NEW)
-4. The **Full URL with UTM Parameters** will be automatically generated
-5. Click **Copy Full URL** button to copy the complete URL
-6. Save
-
-### Creating Short URLs
-1. Go to **Short URL** in the desk
-2. Click **New**
-3. Enter your original URL
-4. Select a UTM Campaign (optional)
-5. Add custom alias (optional)
-6. Save
-
-## 🔌 API Usage
-
-### Create Short URL
-```python
-import requests
-
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.create_short_url', {
-    'original_url': 'https://example.com/product',
-    'utm_campaign': 'summer_sale_campaign',
-    'custom_alias': 'summer-sale'
-})
-
-data = response.json()
-print(data['message']['short_url'])
-```
-
-### Generate UTM URL
-```python
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.doctype.utm_campaign.utm_campaign.generate_utm_url', {
-    'campaign_name': 'CAMP-001',
-    'base_url': 'https://example.com/products'
-})
-
-utm_url = response.json()['message']
-print(f"Generated URL: {utm_url}")
-```
-
-### Get Analytics
-```python
-response = requests.get('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.get_url_analytics', {
-    'short_code': 'abc123'
-})
-
-analytics = response.json()['message']
-print(f"Total clicks: {analytics['short_url']['total_clicks']}")
-```
-
-### Bulk Create URLs
-```python
-import json
-
-urls = [
-    {"url": "https://shop.com/laptops", "alias": "laptops"},
-    {"url": "https://shop.com/phones", "alias": "phones"}
-]
-
-response = requests.post('https://yoursite.com/api/method/utm_shortener.utm_shortener.api.bulk_create_utm_urls', {
-    'campaign': 'summer_sale_campaign',
-    'url_list': json.dumps(urls)
-})
-```
-
-## 📊 DocTypes
-
-### UTM Campaign
-Main campaign management with UTM parameters.
-**Fields:**
-- Campaign Name (Data, Required)
-- Campaign Code (Data, Auto-generated, Unique)
-- UTM Source (Data, Required)
-- UTM Medium (Select: email, social, cpc, etc.)
-- UTM Campaign (Data, Required)
-- UTM Term (Data, Optional)
-- UTM Content (Data, Optional)
-- **Base URL (Data, Optional) - NEW**
-- **Full URL with UTM Parameters (Small Text, Read-only, Auto-generated) - NEW**
-- Description (Text Editor)
-- Status (Select: Active, Inactive, Completed)
-- Start Date/End Date
-
-### Short URL
-Individual shortened URLs with tracking.
-**Fields:**
-- Short Code (Data, Required, Unique, Auto-generated)
-- Original URL (Long Text, Required)
-- Short URL (Data, Read-only, Auto-generated)
-- UTM Campaign (Link: UTM Campaign, Optional)
-- Generated UTM URL (Long Text, Read-only)
-- Custom Alias (Data, Optional, Unique)
-- Total Clicks (Int, Default: 0, Read-only)
-- Status (Select: Active, Inactive, Expired)
-- Expiry Date (Date, Optional)
-- Last Accessed (Datetime, Read-only)
-
-### URL Click Log
-Detailed click tracking records.
-**Fields:**
-- Short URL (Link: Short URL, Required)
-- Timestamp (Datetime, Default: now)
-- IP Address (Data)
-- User Agent (Long Text)
-- Referrer URL (Long Text)
-- Country (Data)
-- City (Data)
-- Device Type (Select: Desktop, Mobile, Tablet, Unknown)
-- Browser (Data)
-- Operating System (Data)
-
-### UTM Template
-Reusable UTM parameter templates.
-**Fields:**
-- Template Name (Data, Required)
-- Template Code (Data, Auto-generated)
-- UTM Source/Medium (Data, Required)
-- UTM Campaign/Term/Content Templates (Data)
-- Description (Text)
-- Is Active (Check, Default: 1)
-
-### UTM Shortener Settings (Single DocType)
-System-wide configuration.
-**Fields:**
-- Base Domain (Data, Default: "short.ly")
-- Use HTTPS (Check, Default: 1)
-- Default Expiry Days (Int, Default: 365)
-- Rate Limit Per Hour (Int, Default: 100)
-- Enable Geolocation (Check)
-- Geolocation API Key (Password)
-- Blocked Domains (Long Text)
-
-## 🔒 Permissions
-
-The app includes role-based permissions:
-- **UTM Manager**: Full access to all features
-- **UTM User**: Create and manage own URLs
-- **UTM Viewer**: Read-only access to analytics
-
-## ⏰ Scheduled Tasks
-
-### Daily Tasks
-- **cleanup_expired_urls**: Mark expired URLs as inactive
-- **update_geolocation_data**: Update location data for recent clicks
-
-### Hourly Tasks
-- **reset_rate_limits**: Reset user rate limiting counters
-
-## 🎨 Customization
-
-### Adding Custom Fields
-You can extend the doctypes with custom fields:
+### 2. Create Your First Campaign
 
 ```python
-# Add custom field to UTM Campaign
-custom_field = {
-    "dt": "UTM Campaign",
-    "properties": [
-        {
-            "fieldname": "budget",
-            "label": "Campaign Budget",
-            "fieldtype": "Currency"
-        }
-    ]
+# Create a campaign
+campaign = frappe.get_doc({
+    "doctype": "UTM Campaign",
+    "campaign_name": "Product Launch 2024",
+    "utm_source": "social",
+    "utm_medium": "post",
+    "utm_campaign": "product-launch-2024"
+}).insert()
+
+# Create a short URL
+short_url = frappe.get_doc({
+    "doctype": "Short URL",
+    "original_url": "https://example.com/new-product",
+    "utm_campaign": campaign.name,
+    "custom_alias": "new-product"
+}).insert()
+
+print(f"Your short URL: {short_url.short_url}")
+```
+
+### 3. URL Structure
+
+#### Frappe Cloud URLs:
+```
+https://your-site.frappe.cloud/s/new-product
+```
+
+#### Self-Hosted URLs:
+```
+https://link.yourdomain.com/s/new-product
+```
+
+#### Custom Domain (with Cloudflare Worker):
+```
+https://short.link/new-product
+```
+
+## 📊 How It Works
+
+```mermaid
+graph LR
+    A[Create Campaign] --> B[Generate Short URLs]
+    B --> C[Share in Marketing]
+    C --> D[Visitor Clicks]
+    D --> E[Track Analytics]
+    E --> F[Redirect to Target]
+    E --> G[Dashboard Reports]
+```
+
+## 🌐 Deployment Options
+
+### 1. Frappe Cloud (Easiest)
+- No server management
+- Automatic SSL
+- Built-in scaling
+- Works out of the box
+
+### 2. Self-Hosted
+- Full control
+- Custom nginx configuration
+- Any domain structure
+
+### 3. Hybrid (Frappe Cloud + Custom Domain)
+- Use Cloudflare Workers for custom domains
+- Keep app on Frappe Cloud
+- Best of both worlds
+
+See our [Cloudflare Worker example](cloudflare-worker/utm-shortener-worker.js) for custom domain setup.
+
+## 📚 Documentation
+
+- **[Setup Guide](SETUP_GUIDE.md)** - Detailed setup instructions
+- **[Frappe Cloud Setup](FRAPPE_CLOUD_SETUP.md)** - Frappe Cloud specific guide
+- **[Deployment Guide](DEPLOYMENT.md)** - Self-hosted production deployment
+- **[Workflow Documentation](docs/WORKFLOW.md)** - Visual workflow diagrams
+- **[API Reference](#api-reference)** - Complete API documentation
+
+## 🔧 API Reference
+
+### Authentication
+All API calls require authentication using API keys or session tokens.
+
+### Core Endpoints
+
+#### Create UTM Campaign
+```python
+POST /api/method/utm_shortener.utm_shortener.api.create_utm_campaign
+{
+    "campaign_name": "Summer Sale",
+    "utm_source": "email",
+    "utm_medium": "newsletter",
+    "utm_campaign": "summer-sale-2024"
 }
 ```
 
-## 🐛 Troubleshooting
+#### Create Short URL
+```python
+POST /api/method/utm_shortener.utm_shortener.api.create_short_url
+{
+    "original_url": "https://example.com/page",
+    "utm_campaign": "campaign-id",
+    "custom_alias": "summer"
+}
+```
 
-### Common Issues
+#### Get Analytics
+```python
+GET /api/method/utm_shortener.utm_shortener.api.get_campaign_analytics
+{
+    "campaign_id": "campaign-id"
+}
+```
 
-#### Short URLs not redirecting
-- Check website route configuration in hooks.py
-- Ensure the app is installed and migrated
-- Verify domain settings
+## 🎯 Use Cases
 
-#### Rate limiting issues
-- Check UTM Shortener Settings
-- Adjust rate_limit_per_hour value
+### Marketing Teams
+- Track campaign performance across channels
+- A/B test different messaging
+- Measure ROI by traffic source
 
-#### Analytics not tracking
-- Verify click logs are being created
-- Check browser restrictions
-- Ensure proper permissions
+### Sales Teams
+- Create personalized links for prospects
+- Track engagement with sales materials
+- Measure email campaign effectiveness
+
+### Social Media
+- Track viral content spread
+- Measure influencer campaign impact
+- Optimize posting strategies
+
+### Events & Webinars
+- Track registration sources
+- Measure promotional effectiveness
+- Analyze attendee demographics
+
+## 🔒 Security & Privacy
+
+- **Self-hosted**: Your data stays on your servers
+- **Permission-based**: Granular access control
+- **GDPR Compliant**: Full data ownership and control
+- **Rate Limiting**: Built-in abuse prevention
+- **Audit Trail**: Complete activity logging
+
+## 📈 Analytics Dashboard
+
+Track comprehensive metrics:
+- **Traffic Sources**: Social, Search, Email, Direct
+- **Geographic Distribution**: Country-level tracking
+- **Device Analytics**: Desktop, Mobile, Tablet
+- **Time Analysis**: Peak traffic hours
+- **Conversion Tracking**: Source to conversion mapping
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### Development Setup
-```bash
-# Install in development mode
-bench get-app utm_shortener /path/to/local/repo
-bench --site dev.local install-app utm_shortener
-bench --site dev.local migrate
-```
+## 📝 License
 
-## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-MIT License - see LICENSE file for details.
+## 🙏 Acknowledgments
+
+- Built on the robust [Frappe Framework](https://frappeframework.com)
+- Inspired by modern URL shorteners like Bitly and Rebrandly
+- Community contributors and testers
 
 ## 📞 Support
 
+- **Documentation**: [All Guides](https://github.com/chinmaybhatk/utm_shortener/tree/main/docs)
 - **Issues**: [GitHub Issues](https://github.com/chinmaybhatk/utm_shortener/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/chinmaybhatk/utm_shortener/discussions)
+- **Frappe Cloud Support**: support@frappe.cloud
 
-## ⚠️ Compatibility
+## 🌟 Star History
 
-- **Frappe Framework**: v15.0+
-- **ERPNext**: v15.0+ (optional)
-- **Python**: 3.8+
-
-## 📝 Changelog
-
-### v1.1.0
-- **NEW**: Auto-generate full URLs with UTM parameters
-- **NEW**: Base URL field in UTM Campaign
-- **NEW**: One-click copy URL functionality
-- **NEW**: Real-time URL preview
-- Improved user experience
-
-### v1.0.0
-- Initial release
-- Core URL shortening functionality
-- UTM parameter generation
-- Basic analytics
-- API endpoints
-- Frappe v15 compatibility
+[![Star History Chart](https://api.star-history.com/svg?repos=chinmaybhatk/utm_shortener&type=Date)](https://star-history.com/#chinmaybhatk/utm_shortener&Date)
 
 ---
 
-**Made with ❤️ for the Frappe community**
+Made with ❤️ for the Frappe/ERPNext community

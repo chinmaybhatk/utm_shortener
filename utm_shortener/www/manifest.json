@@ -1,0 +1,44 @@
+{
+  "name": "UTM URL Shortener",
+  "short_name": "URL Short",
+  "description": "Shorten URLs and track clicks with UTM parameters",
+  "start_url": "/shorten",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#4CAF50",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/utm_shortener/images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/utm_shortener/images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Short URL",
+      "url": "/shorten",
+      "description": "Quickly create a new short URL"
+    },
+    {
+      "name": "View Analytics",
+      "url": "/app/query-report/URL%20Click%20Analytics",
+      "description": "View click analytics"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "screenshots": [
+    {
+      "src": "/assets/utm_shortener/images/screenshot1.png",
+      "sizes": "540x720",
+      "type": "image/png"
+    }
+  ]
+}
