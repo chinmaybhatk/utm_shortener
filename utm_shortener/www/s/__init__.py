@@ -4,14 +4,19 @@ from frappe import _
 no_cache = 1
 
 def get_context(context):
-    """Handle short URL redirects"""
+    """Handle short URL redirects with dynamic paths"""
     try:
-        # Get the short code from the path
-        path_parts = frappe.local.request.path.split('/')
-        if len(path_parts) < 3 or path_parts[1] != 's':
+        # Get the current path
+        path = frappe.local.request.path
+        
+        # Extract short code - path should be like /s/abc123
+        if path.startswith('/s/'):
+            short_code = path[3:].strip('/')
+        else:
             frappe.throw(_("Invalid short URL format"))
         
-        short_code = path_parts[2]
+        if not short_code:
+            frappe.throw(_("Short code not provided"))
         
         # Find the short URL document
         short_url_name = frappe.db.get_value("Short URL", {"short_code": short_code}, "name")
