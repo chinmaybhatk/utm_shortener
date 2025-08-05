@@ -12,8 +12,8 @@ app_license = "MIT"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/utm_shortener/css/utm_shortener.css"
-# app_include_js = "/assets/utm_shortener/js/utm_shortener.js"
+app_include_css = "/assets/utm_shortener/css/utm_shortener.css"
+app_include_js = "/assets/utm_shortener/js/quick_url_shortener.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/utm_shortener/css/utm_shortener.css"
@@ -30,7 +30,10 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    "Short URL" : "public/js/short_url.js",
+    "UTM Campaign" : "public/js/utm_campaign.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -191,6 +194,7 @@ scheduler_events = {
 # Additional Website Route Rules
 website_route_rules = [
     {"from_route": "/s/<path:short_code>", "to_route": "utm_shortener.www.s.redirect_short_url"},
+    {"from_route": "/shorten", "to_route": "utm_shortener.www.shorten"},
 ]
 
 # Fixtures
@@ -208,3 +212,23 @@ fixtures = [
         ]
     }
 ]
+
+# Additional app configuration
+app_icon = "octicon octicon-link"
+app_color = "#4CAF50"
+app_email = "chinmaybhatk@gmail.com"
+app_license = "MIT"
+
+# Add to global search
+global_search_doctypes = {
+    "Default": [
+        {"doctype": "Short URL", "index": 0},
+        {"doctype": "UTM Campaign", "index": 1}
+    ]
+}
+
+# Website context
+website_context = {
+    "favicon": "/assets/utm_shortener/images/favicon.png",
+    "app_name": "UTM Shortener"
+}
