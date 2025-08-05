@@ -29,20 +29,19 @@ class ShortURL(Document):
         """Generate the complete short URL using configured domain"""
         settings = frappe.get_single("UTM Shortener Settings")
         
-        # Get domain configuration
-        if settings.custom_domain_enabled and settings.short_domain:
-            domain = settings.short_domain
-        else:
-            # Fallback to site URL
-            domain = frappe.utils.get_url()
-            # Remove protocol from domain
-            domain = domain.replace("https://", "").replace("http://", "")
+        # Get domain from settings
+        base_domain = settings.base_domain or frappe.utils.get_url()
         
-        # Determine protocol
-        protocol = "https" if settings.use_https else "http"
+        # Clean up the domain - remove trailing slashes
+        base_domain = base_domain.rstrip('/')
+        
+        # If base_domain doesn't include protocol, add it based on use_https setting
+        if not base_domain.startswith(('http://', 'https://')):
+            protocol = 'https' if settings.use_https else 'http'
+            base_domain = f"{protocol}://{base_domain}"
         
         # Generate the short URL
-        return f"{protocol}://{domain}/s/{self.short_code}"
+        return f"{base_domain}/s/{self.short_code}"
     
     def generate_short_code(self):
         """Generate unique short code"""
